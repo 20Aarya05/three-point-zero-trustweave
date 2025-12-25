@@ -1,0 +1,133 @@
+{
+  "info": {
+    "name": "TrustWeave Combined Upload & Assessment",
+    "description": "Test combined file upload and assessment functionality"
+  },
+  "requests": [
+    {
+      "name": "1. Combined Upload and Assess",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            {
+              "key": "documents",
+              "type": "file",
+              "src": "mobile-bill.pdf",
+              "description": "Mobile bill evidence"
+            },
+            {
+              "key": "documents",
+              "type": "file",
+              "src": "utility-bill.pdf",
+              "description": "Utility bill evidence"
+            },
+            {
+              "key": "documents",
+              "type": "file",
+              "src": "community-receipt.jpg",
+              "description": "Community participation proof"
+            },
+            {
+              "key": "assessmentData",
+              "value": "{\n  \"purpose\": \"medium\",\n  \"mobile\": {\n    \"simDuration\": \"more_than_2_years\",\n    \"rechargeRegularity\": \"very_regular\",\n    \"usageConsistency\": \"stable\"\n  },\n  \"utility\": {\n    \"onTimePayment\": \"always\",\n    \"delayFrequency\": \"rarely\",\n    \"billPredictability\": \"consistent\"\n  },\n  \"community\": {\n    \"groupParticipation\": \"active\",\n    \"sharedResponsibility\": \"high\",\n    \"disputeHistory\": \"clear\"\n  },\n  \"evidence\": [],\n  \"loanExperience\": \"No previous loans\",\n  \"financial\": {\n    \"employmentType\": \"full_time\",\n    \"incomeRange\": \"30000-50000\",\n    \"incomeStability\": \"stable\"\n  },\n  \"assets\": {\n    \"property\": false,\n    \"fixedDeposits\": true,\n    \"collateralWillingness\": true\n  }\n}",
+              "type": "text"
+            },
+            {
+              "key": "userId",
+              "value": "test-user-combined",
+              "type": "text"
+            }
+          ]
+        },
+        "url": {
+          "raw": "{{BASE_URL}}/api/trust/assess-with-upload",
+          "host": [
+            "{{BASE_URL}}"
+          ],
+          "path": [
+            "api",
+            "trust",
+            "assess-with-upload"
+          ]
+        }
+      },
+      "description": "Upload files and perform assessment in a single request"
+    },
+    {
+      "name": "2. Combined with Invalid Assessment Data",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            {
+              "key": "documents",
+              "type": "file",
+              "src": "test-file.pdf"
+            },
+            {
+              "key": "assessmentData",
+              "value": "{\n  \"purpose\": \"invalid\",\n  \"mobile\": {},\n  \"utility\": {},\n  \"community\": {},\n  \"evidence\": [],\n  \"loanExperience\": \"\",\n  \"financial\": {},\n  \"assets\": {}\n}",
+              "type": "text"
+            },
+            {
+              "key": "userId",
+              "value": "test-user",
+              "type": "text"
+            }
+          ]
+        },
+        "url": {
+          "raw": "{{BASE_URL}}/api/trust/assess-with-upload",
+          "host": [
+            "{{BASE_URL}}"
+          ],
+          "path": [
+            "api",
+            "trust",
+            "assess-with-upload"
+          ]
+        }
+      },
+      "description": "Test error handling with invalid assessment data in combined request"
+    },
+    {
+      "name": "3. Combined with No Files",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            {
+              "key": "assessmentData",
+              "value": "{\n  \"purpose\": \"small\",\n  \"mobile\": {\n    \"simDuration\": \"1_to_2_years\",\n    \"rechargeRegularity\": \"mostly_regular\",\n    \"usageConsistency\": \"stable\"\n  },\n  \"utility\": {\n    \"onTimePayment\": \"mostly\",\n    \"delayFrequency\": \"rarely\",\n    \"billPredictability\": \"consistent\"\n  },\n  \"community\": {\n    \"groupParticipation\": \"active\",\n    \"sharedResponsibility\": \"medium\",\n    \"disputeHistory\": \"clear\"\n  },\n  \"evidence\": [],\n  \"loanExperience\": \"No previous loans\",\n  \"financial\": {\n    \"employmentType\": \"full_time\",\n    \"incomeRange\": \"25000-40000\",\n    \"incomeStability\": \"stable\"\n  },\n  \"assets\": {\n    \"property\": false,\n    \"fixedDeposits\": false,\n    \"collateralWillingness\": true\n  }\n}",
+              "type": "text"
+            },
+            {
+              "key": "userId",
+              "value": "test-user-no-files",
+              "type": "text"
+            }
+          ]
+        },
+        "url": {
+          "raw": "{{BASE_URL}}/api/trust/assess-with-upload",
+          "host": [
+            "{{BASE_URL}}"
+          ],
+          "path": [
+            "api",
+            "trust",
+            "assess-with-upload"
+          ]
+        }
+      },
+      "description": "Test combined endpoint with no files - should still perform assessment"
+    }
+  ]
+}

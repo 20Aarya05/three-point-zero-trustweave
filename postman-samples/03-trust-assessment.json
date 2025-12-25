@@ -1,0 +1,118 @@
+{
+  "info": {
+    "name": "TrustWeave Trust Assessment Tests",
+    "description": "Test the main trust assessment functionality"
+  },
+  "requests": [
+    {
+      "name": "1. Basic Trust Assessment",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"purpose\": \"small\",\n  \"mobile\": {\n    \"simDuration\": \"more_than_2_years\",\n    \"rechargeRegularity\": \"very_regular\",\n    \"usageConsistency\": \"stable\"\n  },\n  \"utility\": {\n    \"onTimePayment\": \"always\",\n    \"delayFrequency\": \"never\",\n    \"billPredictability\": \"consistent\"\n  },\n  \"community\": {\n    \"groupParticipation\": \"active\",\n    \"sharedResponsibility\": \"high\",\n    \"disputeHistory\": \"clear\"\n  },\n  \"evidence\": [\n    {\n      \"name\": \"mobile-bill-jan.pdf\",\n      \"type\": \"mobile\",\n      \"months\": 2\n    },\n    {\n      \"name\": \"utility-bill-feb.pdf\",\n      \"type\": \"utility\",\n      \"months\": 2\n    },\n    {\n      \"name\": \"community-receipt.jpg\",\n      \"type\": \"community\",\n      \"months\": 2\n    }\n  ],\n  \"loanExperience\": \"No previous loans, first time applicant\",\n  \"financial\": {\n    \"employmentType\": \"full_time\",\n    \"incomeRange\": \"25000-50000\",\n    \"incomeStability\": \"stable\"\n  },\n  \"assets\": {\n    \"property\": false,\n    \"fixedDeposits\": true,\n    \"collateralWillingness\": true\n  }\n}"
+        },
+        "url": {
+          "raw": "{{BASE_URL}}/api/trust/assess",
+          "host": ["{{BASE_URL}}"],
+          "path": ["api", "trust", "assess"]
+        }
+      },
+      "description": "Test basic trust assessment with good behavioral patterns"
+    },
+    {
+      "name": "2. High Risk Assessment",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"purpose\": \"large\",\n  \"mobile\": {\n    \"simDuration\": \"less_than_6_months\",\n    \"rechargeRegularity\": \"irregular\",\n    \"usageConsistency\": \"fluctuating\"\n  },\n  \"utility\": {\n    \"onTimePayment\": \"often_late\",\n    \"delayFrequency\": \"frequently\",\n    \"billPredictability\": \"highly_variable\"\n  },\n  \"community\": {\n    \"groupParticipation\": \"none\",\n    \"sharedResponsibility\": \"none\",\n    \"disputeHistory\": \"major\"\n  },\n  \"evidence\": [],\n  \"loanExperience\": \"Multiple defaults in past\",\n  \"financial\": {\n    \"employmentType\": \"unemployed\",\n    \"incomeRange\": \"0-10000\",\n    \"incomeStability\": \"unstable\"\n  },\n  \"assets\": {\n    \"property\": false,\n    \"fixedDeposits\": false,\n    \"collateralWillingness\": false\n  }\n}"
+        },
+        "url": {
+          "raw": "{{BASE_URL}}/api/trust/assess",
+          "host": ["{{BASE_URL}}"],
+          "path": ["api", "trust", "assess"]
+        }
+      },
+      "description": "Test assessment with poor behavioral patterns - should result in low trust band"
+    },
+    {
+      "name": "3. Medium Risk Assessment",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"purpose\": \"medium\",\n  \"mobile\": {\n    \"simDuration\": \"1_to_2_years\",\n    \"rechargeRegularity\": \"mostly_regular\",\n    \"usageConsistency\": \"stable\"\n  },\n  \"utility\": {\n    \"onTimePayment\": \"mostly\",\n    \"delayFrequency\": \"occasionally\",\n    \"billPredictability\": \"variable\"\n  },\n  \"community\": {\n    \"groupParticipation\": \"passive\",\n    \"sharedResponsibility\": \"medium\",\n    \"disputeHistory\": \"minor\"\n  },\n  \"evidence\": [\n    {\n      \"name\": \"utility-bills.pdf\",\n      \"type\": \"utility\",\n      \"months\": 6\n    }\n  ],\n  \"loanExperience\": \"One small loan, paid on time\",\n  \"financial\": {\n    \"employmentType\": \"part_time\",\n    \"incomeRange\": \"15000-25000\",\n    \"incomeStability\": \"somewhat_stable\"\n  },\n  \"assets\": {\n    \"property\": false,\n    \"fixedDeposits\": false,\n    \"collateralWillingness\": true\n  }\n}"
+        },
+        "url": {
+          "raw": "{{BASE_URL}}/api/trust/assess",
+          "host": ["{{BASE_URL}}"],
+          "path": ["api", "trust", "assess"]
+        }
+      },
+      "description": "Test assessment with mixed behavioral patterns - should result in medium trust band"
+    },
+    {
+      "name": "4. Validation Error Test",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"purpose\": \"invalid_purpose\",\n  \"mobile\": {\n    \"simDuration\": \"\"\n  },\n  \"utility\": {},\n  \"community\": {},\n  \"evidence\": [],\n  \"loanExperience\": \"\",\n  \"financial\": {},\n  \"assets\": {}\n}"
+        },
+        "url": {
+          "raw": "{{BASE_URL}}/api/trust/assess",
+          "host": ["{{BASE_URL}}"],
+          "path": ["api", "trust", "assess"]
+        }
+      },
+      "description": "Test validation error handling with invalid data"
+    },
+    {
+      "name": "5. Empty Request Test",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{}"
+        },
+        "url": {
+          "raw": "{{BASE_URL}}/api/trust/assess",
+          "host": ["{{BASE_URL}}"],
+          "path": ["api", "trust", "assess"]
+        }
+      },
+      "description": "Test error handling with completely empty request"
+    }
+  ]
+}

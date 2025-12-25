@@ -1,0 +1,220 @@
+{
+  "info": {
+    "name": "Supabase Direct API Tests",
+    "description": "Test Supabase database and storage directly"
+  },
+  "requests": [
+    {
+      "name": "1. Query Trust Assessments Table",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "apikey",
+            "value": "{{SUPABASE_ANON_KEY}}"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{SUPABASE_ANON_KEY}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{SUPABASE_URL}}/rest/v1/trust_assessments?select=*&limit=10",
+          "host": ["{{SUPABASE_URL}}"],
+          "path": ["rest", "v1", "trust_assessments"],
+          "query": [
+            {
+              "key": "select",
+              "value": "*"
+            },
+            {
+              "key": "limit",
+              "value": "10"
+            }
+          ]
+        }
+      },
+      "description": "Query the trust_assessments table to see stored assessments"
+    },
+    {
+      "name": "2. Query File Uploads Table",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "apikey",
+            "value": "{{SUPABASE_ANON_KEY}}"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{SUPABASE_ANON_KEY}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{SUPABASE_URL}}/rest/v1/file_uploads?select=*&limit=10",
+          "host": ["{{SUPABASE_URL}}"],
+          "path": ["rest", "v1", "file_uploads"],
+          "query": [
+            {
+              "key": "select",
+              "value": "*"
+            },
+            {
+              "key": "limit",
+              "value": "10"
+            }
+          ]
+        }
+      },
+      "description": "Query the file_uploads table to see uploaded files"
+    },
+    {
+      "name": "3. Trust Band Distribution Analytics",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "apikey",
+            "value": "{{SUPABASE_ANON_KEY}}"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{SUPABASE_ANON_KEY}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{SUPABASE_URL}}/rest/v1/trust_assessment_analytics?select=*",
+          "host": ["{{SUPABASE_URL}}"],
+          "path": ["rest", "v1", "trust_assessment_analytics"],
+          "query": [
+            {
+              "key": "select",
+              "value": "*"
+            }
+          ]
+        }
+      },
+      "description": "Query the analytics view for trust band distribution"
+    },
+    {
+      "name": "4. Filter Assessments by Trust Band",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "apikey",
+            "value": "{{SUPABASE_ANON_KEY}}"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{SUPABASE_ANON_KEY}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{SUPABASE_URL}}/rest/v1/trust_assessments?trust_band=eq.T3&select=request_id,trust_band,created_at",
+          "host": ["{{SUPABASE_URL}}"],
+          "path": ["rest", "v1", "trust_assessments"],
+          "query": [
+            {
+              "key": "trust_band",
+              "value": "eq.T3"
+            },
+            {
+              "key": "select",
+              "value": "request_id,trust_band,created_at"
+            }
+          ]
+        }
+      },
+      "description": "Filter assessments by specific trust band (T3 in this example)"
+    },
+    {
+      "name": "5. Count Assessments by Date",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "apikey",
+            "value": "{{SUPABASE_ANON_KEY}}"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{SUPABASE_ANON_KEY}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{SUPABASE_URL}}/rest/v1/trust_assessments?select=created_at&created_at=gte.2024-01-01",
+          "host": ["{{SUPABASE_URL}}"],
+          "path": ["rest", "v1", "trust_assessments"],
+          "query": [
+            {
+              "key": "select",
+              "value": "created_at"
+            },
+            {
+              "key": "created_at",
+              "value": "gte.2024-01-01"
+            }
+          ]
+        }
+      },
+      "description": "Count assessments created after a specific date"
+    },
+    {
+      "name": "6. Test Service Role Access",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "apikey",
+            "value": "{{SUPABASE_SERVICE_KEY}}"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{SUPABASE_SERVICE_KEY}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{SUPABASE_URL}}/rest/v1/trust_assessments?select=*&limit=5",
+          "host": ["{{SUPABASE_URL}}"],
+          "path": ["rest", "v1", "trust_assessments"],
+          "query": [
+            {
+              "key": "select",
+              "value": "*"
+            },
+            {
+              "key": "limit",
+              "value": "5"
+            }
+          ]
+        }
+      },
+      "description": "Test service role access to database (should have full access)"
+    }
+  ]
+}

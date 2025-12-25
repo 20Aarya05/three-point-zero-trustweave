@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TrustWeave Demo</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #333;
+        }
+        input, textarea, select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        button {
+            background: #007bff;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-right: 10px;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        .result {
+            margin-top: 30px;
+            padding: 20px;
+            border-radius: 4px;
+            white-space: pre-wrap;
+        }
+        .success {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+        }
+        .error {
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+        }
+        .trust-band {
+            font-size: 24px;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+        .T1 { color: #dc3545; }
+        .T2 { color: #fd7e14; }
+        .T3 { color: #ffc107; }
+        .T4 { color: #28a745; }
+        .T5 { color: #007bff; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>TrustWeave Credit Evaluation Demo</h1>
+        
+        <form id="evaluationForm">
+            <div class="form-group">
+                <label for="creditPurpose">Credit Purpose:</label>
+                <select id="creditPurpose" required>
+                    <option value="">Select purpose...</option>
+                    <option value="home_purchase">Home Purchase</option>
+                    <option value="auto_loan">Auto Loan</option>
+                    <option value="personal_loan">Personal Loan</option>
+                    <option value="business_loan">Business Loan</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="monthlyIncome">Monthly Income ($):</label>
+                <input type="number" id="monthlyIncome" required min="0" step="100">
+            </div>
+
+            <div class="form-group">
+                <label for="monthlyExpenses">Monthly Expenses ($):</label>
+                <input type="number" id="monthlyExpenses" required min="0" step="100">
+            </div>
+
+            <div class="form-group">
+                <label for="creditScore">Credit Score:</label>
+                <input type="number" id="creditScore" required min="300" max="850">
+            </div>
+
+            <div class="form-group">
+                <label for="savingsBalance">Savings Balance ($):</label>
+                <input type="number" id="savingsBalance" required min="0" step="100">
+            </div>
+
+            <div class="form-group">
+                <label for="loanHistory">Loan History:</label>
+                <textarea id="loanHistory" rows="3" placeholder="Describe previous loan history..."></textarea>
+            </div>
+
+            <button type="submit" id="evaluateBtn">Evaluate Credit</button>
+            <button type="button" id="debugBtn">Debug Evaluation</button>
+        </form>
+
+        <div id="result"></div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:3001';
+        
+        document.getElementById('evaluationForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            await performEvaluation('/api/evaluate/full');
+        });
+
+        document.getElementById('debugBtn').addEventListener('click', async () => {
+            await performEvaluation('/api/evaluate/debug');
+        });
+
+        async function performEvaluation(endpoint) {
+            const evaluateBtn = document.getElementById('evaluateBtn');
+            const debugBtn = document.getElementById('debugBtn');
+            const resultDiv = document.getElementById('result');
+
+            // Disable buttons
+            evaluateBtn.disabled = true;
+            debugBtn.disabled = true;
+            
+            // Show loading
+            resultDiv.innerHTML = '<div class="result">Evaluating...</div>';
+
+            try {
+                // Collect form data
+                const formData = {
+                    credit_purpose: document.getElementById('creditPurpose').value,
+                    behavioral_inputs: {
+                        payment_history_score: parseInt(document.getElementById('creditScore').value) / 10,
+                        credit_utilization: 0.25 // Default value
+                    },
+                    evidence_metadata: [
+                        {
+                            document_type: 'application_form',
+                            verification_status: 'verified',
+                            confidence_score: 0.95
+                        }
+                    ],
+                    loan_history: document.getElementById('loanHistory').value || 'No previous loan history',
+                    capacity_inputs: {
+                        monthly_income: parseInt(document.getElementById('monthlyIncome').value),
+                        monthly_expenses: parseInt(document.getElementById('monthlyExpenses').value),
+                        debt_to_income_ratio: parseInt(document.getElementById('monthlyExpenses').value) / parseInt(document.getElementById('monthlyIncome').value),
+                        employment_status: 'full_time',
+                        employment_duration_months: 24
+                    },
+                    asset_inputs: {
+                        savings_balance: parseInt(document.getElementById('savingsBalance').value),
+                        checking_balance: 5000,
+                        investment_accounts: 0,
+                        property_value: 0,
+                        vehicle_value: 15000
+                    }
+                };
+
+                // Make API call
+                const response = await fetch(`${API_BASE}${endpoint}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(formData)
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    displaySuccess(result, endpoint.includes('debug'));
+                } else {
+                    displayError(result);
+                }
+
+            } catch (error) {
+                displayError({ error: 'Network Error', message: error.message });
+            } finally {
+                // Re-enable buttons
+                evaluateBtn.disabled = false;
+                debugBtn.disabled = false;
+            }
+        }
+
+        function displaySuccess(result, isDebug) {
+            const resultDiv = document.getElementById('result');
+            
+            let html = `<div class="result success">
+                <h3>Evaluation Result</h3>
+                <div class="trust-band ${result.trust_profile.trust_band}">
+                    Trust Band: ${result.trust_profile.trust_band}
+                </div>
+                <p><strong>Confidence:</strong> ${result.trust_profile.confidence_level}</p>
+                <p><strong>Stability:</strong> ${result.trust_profile.trust_stability}</p>
+                <p><strong>Exposure Readiness:</strong> ${result.trust_profile.exposure_readiness_level}</p>
+                
+                <h4>Explanation</h4>
+                <p>${result.explanation.summary_message}</p>
+                
+                <h4>Key Reasons</h4>
+                <ul>`;
+            
+            result.explanation.key_reasons.forEach(reason => {
+                html += `<li>${reason}</li>`;
+            });
+            
+            html += `</ul>
+                
+                <h4>Improvement Actions</h4>
+                <ul>`;
+            
+            result.improvement_actions.forEach(action => {
+                html += `<li><strong>${action.priority.toUpperCase()}:</strong> ${action.action} - ${action.impact}</li>`;
+            });
+            
+            html += `</ul>`;
+
+            if (isDebug) {
+                html += `
+                    <h4>Debug Information</h4>
+                    <pre style="background: #f8f9fa; padding: 15px; border-radius: 4px; overflow-x: auto;">
+${JSON.stringify(result.debug_info, null, 2)}
+                    </pre>`;
+            }
+
+            html += `</div>`;
+            resultDiv.innerHTML = html;
+        }
+
+        function displayError(error) {
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = `
+                <div class="result error">
+                    <h3>Error</h3>
+                    <p><strong>${error.error || 'Unknown Error'}</strong></p>
+                    <p>${error.message || 'An unexpected error occurred'}</p>
+                    ${error.details ? `<pre>${JSON.stringify(error.details, null, 2)}</pre>` : ''}
+                </div>
+            `;
+        }
+    </script>
+</body>
+</html>

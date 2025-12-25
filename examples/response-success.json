@@ -1,0 +1,51 @@
+{
+  "trust_profile": {
+    "trust_band": "T3",
+    "confidence_level": "high",
+    "trust_stability": "stable",
+    "exposure_readiness_level": "moderate"
+  },
+  "explanation": {
+    "summary_message": "Applicant demonstrates solid financial responsibility with consistent payment history and reasonable debt levels. Some areas for improvement identified.",
+    "key_reasons": [
+      "Strong payment history with 85% score",
+      "Healthy debt-to-income ratio at 28%",
+      "Substantial savings and asset base",
+      "Stable employment for 3+ years",
+      "Credit utilization within acceptable range"
+    ]
+  },
+  "improvement_actions": [
+    {
+      "action": "Reduce credit utilization below 20%",
+      "priority": "medium",
+      "impact": "Could improve trust band to T2 with sustained low utilization"
+    },
+    {
+      "action": "Maintain current payment consistency",
+      "priority": "high",
+      "impact": "Critical for maintaining current trust level"
+    },
+    {
+      "action": "Consider increasing emergency fund to 6 months expenses",
+      "priority": "low",
+      "impact": "Would strengthen overall financial stability profile"
+    }
+  ],
+  "fairness_audit": {
+    "adjustments_applied": [
+      "Income normalization for regional cost of living",
+      "Employment stability weighting adjustment"
+    ],
+    "audit_notes": [
+      "No bias indicators detected in assessment",
+      "All protected characteristics excluded from evaluation",
+      "Regional economic factors appropriately considered"
+    ]
+  },
+  "metadata": {
+    "assessment_type": "purpose-aligned",
+    "generated_at": "2024-12-25T10:30:00.000Z",
+    "version": "v1"
+  }
+}

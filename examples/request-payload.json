@@ -1,0 +1,39 @@
+{
+  "credit_purpose": "home_purchase",
+  "behavioral_inputs": {
+    "payment_history_score": 85,
+    "credit_utilization": 0.25,
+    "account_age_months": 48,
+    "recent_inquiries": 2,
+    "payment_consistency": "high"
+  },
+  "evidence_metadata": [
+    {
+      "document_type": "bank_statement",
+      "verification_status": "verified",
+      "date_range": "2024-01-01_to_2024-03-31",
+      "confidence_score": 0.95
+    },
+    {
+      "document_type": "employment_verification",
+      "verification_status": "verified",
+      "employer": "[EMPLOYER_NAME]",
+      "confidence_score": 0.98
+    }
+  ],
+  "loan_history": "Previous auto loan paid successfully, no defaults in past 7 years",
+  "capacity_inputs": {
+    "monthly_income": 8500,
+    "monthly_expenses": 3200,
+    "debt_to_income_ratio": 0.28,
+    "employment_status": "full_time",
+    "employment_duration_months": 36
+  },
+  "asset_inputs": {
+    "savings_balance": 45000,
+    "checking_balance": 8500,
+    "investment_accounts": 25000,
+    "property_value": 0,
+    "vehicle_value": 18000
+  }
+}

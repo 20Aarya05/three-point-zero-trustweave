@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test TrustWeave File Upload</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 600px; margin: 50px auto; padding: 20px; }
+        .result { margin: 20px 0; padding: 15px; border-radius: 5px; }
+        .success { background: #d4edda; border: 1px solid #c3e6cb; color: #155724; }
+        .error { background: #f8d7da; border: 1px solid #f5c6cb; color: #721c24; }
+        .info { background: #d1ecf1; border: 1px solid #bee5eb; color: #0c5460; }
+        button { background: #007bff; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; }
+        button:hover { background: #0056b3; }
+        input[type="file"] { margin: 10px 0; }
+    </style>
+</head>
+<body>
+    <h1>🧪 TrustWeave File Upload Test</h1>
+    
+    <div class="info">
+        <strong>Instructions:</strong>
+        <ol>
+            <li>Make sure your backend is running: <code>npm run dev</code></li>
+            <li>Select a file to upload</li>
+            <li>Click "Test Upload"</li>
+            <li>Check the results and backend console logs</li>
+        </ol>
+    </div>
+
+    <form id="uploadForm">
+        <div>
+            <label for="fileInput">Select file to upload:</label><br>
+            <input type="file" id="fileInput" accept=".pdf,.jpg,.jpeg,.png,.txt,.doc,.docx" required>
+        </div>
+        
+        <div>
+            <label for="userIdInput">User ID (optional):</label><br>
+            <input type="text" id="userIdInput" value="test-user-html" placeholder="test-user-html">
+        </div>
+        
+        <button type="submit">Test Upload</button>
+    </form>
+
+    <div id="result"></div>
+
+    <script>
+        const API_BASE = 'http://localhost:3001';
+        
+        document.getElementById('uploadForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const fileInput = document.getElementById('fileInput');
+            const userIdInput = document.getElementById('userIdInput');
+            const resultDiv = document.getElementById('result');
+            
+            if (!fileInput.files[0]) {
+                showResult('Please select a file', 'error');
+                return;
+            }
+            
+            const formData = new FormData();
+            formData.append('documents', fileInput.files[0]);
+            formData.append('userId', userIdInput.value || 'test-user-html');
+            
+            showResult('Uploading file...', 'info');
+            
+            try {
+                console.log('🔄 Starting upload to:', `${API_BASE}/api/trust/upload-evidence`);
+                
+                const response = await fetch(`${API_BASE}/api/trust/upload-evidence`, {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const result = await response.json();
+                
+                if (response.ok) {
+                    showResult(`
+                        <strong>✅ Upload Successful!</strong><br>
+                        <strong>Files:</strong> ${result.files.length}<br>
+                        <strong>Request ID:</strong> ${result.request_id}<br>
+                        <strong>Message:</strong> ${result.message}<br>
+                        <br>
+                        <strong>File Details:</strong><br>
+                        ${result.files.map(file => `
+                            - ${file.name} (${file.type})<br>
+                            - Size: ${file.size} bytes<br>
+                            - URL: ${file.url ? 'Generated ✅' : 'Missing ❌'}<br>
+                        `).join('<br>')}
+                        <br>
+                        <strong>✅ Check your Supabase "Files" bucket!</strong>
+                    `, 'success');
+                    
+                    console.log('✅ Upload result:', result);
+                } else {
+                    showResult(`
+                        <strong>❌ Upload Failed</strong><br>
+                        <strong>Status:</strong> ${response.status}<br>
+                        <strong>Error:</strong> ${result.error}<br>
+                        <strong>Message:</strong> ${result.message}<br>
+                        ${result.details ? `<strong>Details:</strong> ${JSON.stringify(result.details, null, 2)}` : ''}
+                    `, 'error');
+                    
+                    console.error('❌ Upload failed:', result);
+                }
+                
+            } catch (error) {
+                showResult(`
+                    <strong>❌ Network Error</strong><br>
+                    <strong>Error:</strong> ${error.message}<br>
+                    <br>
+                    <strong>Possible causes:</strong><br>
+                    - Backend not running (start with: npm run dev)<br>
+                    - Wrong API URL<br>
+                    - CORS issues<br>
+                    - Network connectivity
+                `, 'error');
+                
+                console.error('❌ Network error:', error);
+            }
+        });
+        
+        function showResult(message, type) {
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = `<div class="${type}">${message}</div>`;
+        }
+        
+        // Test backend connectivity on page load
+        window.addEventListener('load', async () => {
+            try {
+                const response = await fetch(`${API_BASE}/health`);
+                if (response.ok) {
+                    const data = await response.json();
+                    showResult(`✅ Backend is running (${data.status})`, 'success');
+                } else {
+                    showResult('⚠️ Backend responded but with error', 'error');
+                }
+            } catch (error) {
+                showResult(`❌ Backend not reachable: ${error.message}`, 'error');
+            }
+        });
+    </script>
+</body>
+</html>

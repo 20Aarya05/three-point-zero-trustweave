@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Direct Supabase Upload</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 600px; margin: 50px auto; padding: 20px; }
+        .result { margin: 20px 0; padding: 15px; border-radius: 5px; }
+        .success { background: #d4edda; border: 1px solid #c3e6cb; color: #155724; }
+        .error { background: #f8d7da; border: 1px solid #f5c6cb; color: #721c24; }
+        .info { background: #d1ecf1; border: 1px solid #bee5eb; color: #0c5460; }
+        button { background: #007bff; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; margin: 5px; }
+        button:hover { background: #0056b3; }
+        input[type="file"] { margin: 10px 0; }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+    <h1>🧪 Direct Supabase Upload Test</h1>
+    
+    <div class="info">
+        <strong>This test uploads files directly to Supabase from the browser</strong>
+        <p>No backend needed! Files go straight to your "Files" bucket.</p>
+    </div>
+
+    <div>
+        <label for="fileInput">Select files to upload:</label><br>
+        <input type="file" id="fileInput" multiple accept=".pdf,.jpg,.jpeg,.png,.txt,.doc,.docx">
+    </div>
+    
+    <div>
+        <label for="categorySelect">Category:</label><br>
+        <select id="categorySelect">
+            <option value="mobile">Mobile</option>
+            <option value="utility">Utility</option>
+            <option value="community">Community</option>
+        </select>
+    </div>
+    
+    <button onclick="testConnection()">Test Connection</button>
+    <button onclick="uploadFiles()">Upload Files</button>
+    <button onclick="listFiles()">List Files</button>
+
+    <div id="result"></div>
+
+    <script>
+        // Initialize Supabase client
+        const supabaseUrl = 'https://cxdkdnkzvutjbqatdbms.supabase.co';
+        const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN4ZGtkbmt6dnV0amJxYXRkYm1zIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjY2Mjg1MjcsImV4cCI6MjA4MjIwNDUyN30.q2fWM3jiqMmkUmP24h3NpVxgdMZLqfda-KGFefbyeXo';
+        
+        const { createClient } = supabase;
+        const supabaseClient = createClient(supabaseUrl, supabaseAnonKey);
+        
+        function showResult(message, type) {
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = `<div class="${type}">${message}</div>`;
+        }
+        
+        async function testConnection() {
+            showResult('Testing Supabase connection...', 'info');
+            
+            try {
+                const { data, error } = await supabaseClient.storage.listBuckets();
+                
+                if (error) {
+                    showResult(`❌ Connection failed: ${error.message}`, 'error');
+                    return;
+                }
+                
+                const buckets = data.map(b => b.name).join(', ');
+                showResult(`✅ Connected! Available buckets: ${buckets}`, 'success');
+                
+                // Check if Files bucket exists
+                const filesBucket = data.find(b => b.name === 'Files');
+                if (filesBucket) {
+                    showResult(`✅ Connected! "Files" bucket found and ready for uploads.`, 'success');
+                } else {
+                    showResult(`⚠️ Connected but "Files" bucket not found. Available: ${buckets}`, 'error');
+                }
+                
+            } catch (error) {
+                showResult(`❌ Connection error: ${error.message}`, 'error');
+            }
+        }
+        
+        async function uploadFiles() {
+            const fileInput = document.getElementById('fileInput');
+            const categorySelect = document.getElementById('categorySelect');
+            
+            if (!fileInput.files || fileInput.files.length === 0) {
+                showResult('Please select files to upload', 'error');
+                return;
+            }
+            
+            const category = categorySelect.value;
+            const files = Array.from(fileInput.files);
+            
+            showResult(`Uploading ${files.length} files to ${category} category...`, 'info');
+            
+            try {
+                const uploadResults = [];
+                
+                for (const file of files) {
+                    const fileName = `${Date.now()}-${Math.random().toString(36).substring(7)}-${file.name}`;
+                    const filePath = `${category}/test-user/${fileName}`;
+                    
+                    console.log(`Uploading ${file.name} to ${filePath}...`);
+                    
+                    const { data, error } = await supabaseClient.storage
+                        .from('Files')
+                        .upload(filePath, file, {
+                            cacheControl: '3600',
+                            upsert: false
+                        });
+                    
+                    if (error) {
+                        throw new Error(`Failed to upload ${file.name}: ${error.message}`);
+                    }
+                    
+                    // Get public URL
+                    const { data: urlData } = supabaseClient.storage
+                        .from('Files')
+                        .getPublicUrl(filePath);
+                    
+                    uploadResults.push({
+                        name: file.name,
+                        path: data.path,
+                        url: urlData.publicUrl
+                    });
+                }
+                
+                let resultHtml = `✅ Successfully uploaded ${uploadResults.length} files!<br><br>`;
+                uploadResults.forEach(result => {
+                    resultHtml += `📁 ${result.name} → ${result.path}<br>`;
+                });
+                resultHtml += `<br>🎉 Check your Supabase Storage > Files bucket > ${category} folder!`;
+                
+                showResult(resultHtml, 'success');
+                
+            } catch (error) {
+                showResult(`❌ Upload failed: ${error.message}`, 'error');
+            }
+        }
+        
+        async function listFiles() {
+            showResult('Listing files in Files bucket...', 'info');
+            
+            try {
+                const { data, error } = await supabaseClient.storage
+                    .from('Files')
+                    .list('', {
+                        limit: 100,
+                        offset: 0
+                    });
+                
+                if (error) {
+                    showResult(`❌ Failed to list files: ${error.message}`, 'error');
+                    return;
+                }
+                
+                if (data.length === 0) {
+                    showResult('📁 No files found in Files bucket', 'info');
+                    return;
+                }
+                
+                let resultHtml = `📁 Found ${data.length} items in Files bucket:<br><br>`;
+                data.forEach(item => {
+                    const icon = item.metadata ? '📄' : '📁';
+                    const size = item.metadata ? ` (${Math.round(item.metadata.size / 1024)}KB)` : '';
+                    resultHtml += `${icon} ${item.name}${size}<br>`;
+                });
+                
+                showResult(resultHtml, 'success');
+                
+            } catch (error) {
+                showResult(`❌ Error listing files: ${error.message}`, 'error');
+            }
+        }
+        
+        // Test connection on page load
+        window.addEventListener('load', testConnection);
+    </script>
+</body>
+</html>
