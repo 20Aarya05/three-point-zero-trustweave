@@ -345,31 +345,3 @@ cd frontend && npm install
 npm run dev          # Backend on :3001
 cd frontend && npm run dev  # Frontend on :5173
 ```
-
-## 📄 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## 🙏 Acknowledgments
-
-- **Google Gemini AI** for powerful language model capabilities
-- **React & Node.js** communities for excellent frameworks
-- **Financial inclusion** advocates for inspiration and guidance
-
-## 📞 Support
-
-- 📧 **Email**: support@trustweave.ai
-- 🐛 **Issues**: [GitHub Issues](https://github.com/20Aarya05/three-point-zero-trustweave/issues)
-- 📖 **Documentation**: [Wiki](https://github.com/20Aarya05/three-point-zero-trustweave/wiki)
-
----
-
-<div align="center">
-
-**🌟 Star this repository if you find it helpful!**
-
-Made with ❤️ for financial inclusion and AI-powered innovation
-
-[⬆ Back to Top](#-trustweave---ai-powered-financial-trust-assessment-system)
-
-</div>
