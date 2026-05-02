@@ -325,7 +325,6 @@ trustweave/
 ### 🌐 **Government & NGOs**
 - **Financial inclusion initiatives** 
 - **Rural banking** programs
-- **Social impact** measurement
 - **Policy development** based on behavioral insights
 
 ## 🤝 Contributing
